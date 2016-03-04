@@ -21,15 +21,17 @@ class NotifireServer(object):
         self.callback = callback
 
     def start(self):
+        print "Starting server"
         with closing(socket()) as self.socket:
             host = gethostname()
             self.socket.bind((host, self.port))
             self.socket.listen(5)
             while True:
                connection, addr = self.socket.accept()
-               self.handle_result(connection)
+               self.handle_request(connection)
 
-    def handle_result(self, connection):
+    def handle_request(self, connection):
+        print "Handling request"
         sender = self.protocol.pong(ReceiveAdapter(connection))
         if sender is not None:
             self.callback(sender)

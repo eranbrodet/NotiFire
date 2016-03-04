@@ -1,8 +1,26 @@
-"""
-    Run server on a new process/thread
-    Run registration thread - every x minutes re-register with the db
-    Run UI that lists available clients and allows to ping them
-    When pinged do visual stuff
-"""
+from multiprocessing import Process, freeze_support
+from socket import gethostname
+from time import sleep
+from notiFireDb import NotiFireDb
+from notiFireClient import NotiFireClient
+from notifireServer import NotifireServer
+from screenSplasher import splash
 
-#TODO use logger instead of print
+
+def run_server():
+    server = NotifireServer(60053, "Eran", splash.show)  #TODO configurable name
+    server.start()
+
+
+def register():
+    while True:
+        NotiFireDb.register("Eran", gethostname())
+        sleep(3600)  #TODO configurable time
+
+
+if __name__ == "__main__":
+    #TODO use logger instead of print
+    freeze_support()  #TODO needed? what does it do?
+    Process(target=register).start()
+    Process(target=run_server).start()
+    #TODO Run UI that lists available clients and allows to ping them

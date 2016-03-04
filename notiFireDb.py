@@ -1,5 +1,4 @@
 from json import load as json_load, dump as json_dump
-from os import remove
 from os.path import exists
 
 
@@ -34,6 +33,7 @@ class NotiFireDb(object):
 
 
 def unit_test():
+    from os import remove
     try:
         NotiFireDb.FILE = "unittest.json"
         t1 = "name1", "a1"
@@ -57,6 +57,7 @@ def unit_test():
     finally:
         if exists(NotiFireDb.FILE):
             remove(NotiFireDb.FILE)
+        print "Passed unit-test"
 
 
 if __name__ == "__main__":

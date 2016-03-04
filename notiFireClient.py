@@ -1,5 +1,5 @@
 from contextlib import closing
-from socket import socket, gethostname
+from socket import socket
 from notiFireProtocol import NotiFireProtocol
 
 

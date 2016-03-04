@@ -10,7 +10,7 @@ class NotiFireProtocol(object):   #TODO document
         self.my_name = my_name
 
     def ping(self, connection, name):
-        data = pack(self.HEADER_TYPE, len(self.my_name), len(name)) + self.my_name + name
+        data = pack(self.HEADER_TYPE, len(name), len(self.my_name)) + name + self.my_name
         connection.send(data)
 
     def pong(self, connection):
