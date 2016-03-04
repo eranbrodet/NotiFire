@@ -3,7 +3,10 @@ from socket import socket, gethostname
 from notiFireProtocol import NotiFireProtocol
 
 
-class Receiver(object):
+class ReceiveAdapter(object):
+    """
+        We use an adapter since our protocol requires a receive method instead of recv
+    """
     def __init__(self, connection):
         self.connection = connection
 
@@ -20,13 +23,13 @@ class NotifireServer(object):
     def start(self):
         with closing(socket()) as self.socket:
             host = gethostname()
-            self.socket.bind((host, self.port))        # Bind to the port
-            self.socket.listen(5)                 # Now wait for client connection.
+            self.socket.bind((host, self.port))
+            self.socket.listen(5)
             while True:
-               connection, addr = self.socket.accept()     # Establish connection with client.
+               connection, addr = self.socket.accept()
                self.handle_result(connection)
 
     def handle_result(self, connection):
-        sender = self.protocol.pong(Receiver(connection))
+        sender = self.protocol.pong(ReceiveAdapter(connection))
         if sender is not None:
             self.callback(sender)

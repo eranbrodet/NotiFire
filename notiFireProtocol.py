@@ -2,6 +2,7 @@ from struct import pack, unpack, calcsize
 
 
 class NotiFireProtocol(object):   #TODO document
+    #TODO consider going back to just sending the sender's name
     HEADER_TYPE = "!II"
 
     def __init__(self, my_name):
