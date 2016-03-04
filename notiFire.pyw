@@ -1,5 +1,4 @@
-from functools import partial
-from multiprocessing import Process, freeze_support
+from multiprocessing import Process, freeze_support, Value, Array
 from random import randint
 from socket import gethostname
 from time import sleep
@@ -12,24 +11,24 @@ from windowsUI import MainWindow
 
 class NotiFire(object):
     def _run_server(self):
-        server = NotifireServer(self.port, self.name, splash.show)
+        server = NotifireServer(self.port.value, self.name.value, splash.show)
         server.start()
 
     def _register(self, name, port):
         my_address = gethostname()
-        NotiFireDb.register(name, my_address, port, old_name=self.name)
-        self.name = name
-        print "new name", self.name
+        NotiFireDb.register(name, my_address, port, old_name=self.name.value)
+        self.name.value = name
+        print "new name", self.name.value
 
     def _register_infinite(self):
         while True:
             try:
-                print "_register_infinite running with ", self.name, self.port
-                self._register(self.name, self.port)
+                print "_register_infinite running with ", self.name.value, self.port.value
+                self._register(self.name.value, self.port.value)
             except ValueError:
                 pass  # Ignoring when we are trying to register the same name again
             finally:
-                sleep(3)  #TODO configurable time
+                sleep(10)  #TODO configurable time
 
     def _register_once(self, name, port):
         try:
@@ -43,31 +42,31 @@ class NotiFire(object):
         try:
             address, port = NotiFireDb.get_address(recipient)
             port = int(port)
-            NotiFireClient(self.name).ping_user(port, address, recipient)
+            NotiFireClient(self.name.value).ping_user(port, address, recipient)
             return True
         except KeyError:
             NotiFireDb.remove(recipient)
             return False
 
     def main(self):
-        self.name = "Anonymous_%s" % (randint(0, 255),)
-        self.port = 60053
+        self.name = Array('c', "Anonymous_%s" % (randint(0, 1024),))
+        self.port = Value('i', 60053)
         #TODO use logger instead of print
         freeze_support()  #TODO needed? what does it do?
         #TODO will it always register the same name here?
 
-        self._register_once(self.name, self.port)  # Ensure we registered before starting the server
+        self._register_once(self.name.value, self.port.value)  # Ensure we registered before starting the server
         register_process = Process(target=self._register_infinite)  #TODO variables aren't shared accross processes
         server_process = Process(target=self._run_server)
         register_process.start()
         server_process.start()
 
-        MainWindow(self.port, self.name, self._register_once, self._pinger).show()
+        MainWindow(self.port.value, self.name.value, self._register_once, self._pinger).show()
 
         print "Shutting down"
         register_process.terminate()
         server_process.terminate()
-        NotiFireDb.remove(self.name)
+        NotiFireDb.remove(self.name.value)
 
 
 if __name__ == "__main__":

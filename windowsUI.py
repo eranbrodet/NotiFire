@@ -49,10 +49,6 @@ class MainWindow(object):
         self._ping_callback = ping_callback
 
     def show(self):
-        # Set transparency
-        #self.root.wait_visibility(self.root)  # Needed for linux ?
-        self._root.attributes('-alpha', 0.95)
-
         # Create Frame
         self.frame = DraggableFrame(self._root)
         self.frame.pack(side=TOP, fill=BOTH, expand=YES)
@@ -70,11 +66,8 @@ class MainWindow(object):
 
         FlatButton(self.frame, text='×', no_bg=True, width=1, font=("calibri", 15), command=self._root.destroy).place(x=w-20, y=-10)
 
-        Label(self.frame, text="Port").place(x=10, y=15)
-        Entry(self.frame, exportselection=0, relief=FLAT, textvariable=self._port).place(x=80, y=15)
-
-        Label(self.frame, text="Name").place(x=10, y=55)
-        Entry(self.frame, exportselection=0, relief=FLAT, textvariable=self._name).place(x=80, y=55)
+        Label(self.frame, text="Name").place(x=10, y=15)
+        Entry(self.frame, exportselection=0, relief=FLAT, textvariable=self._name).place(x=80, y=15)
 
         FlatButton(self.frame, text="Update", width=26, command=self._update_action).place(x=10, y=90)
 
@@ -83,6 +76,9 @@ class MainWindow(object):
         self.buttons = []
         self._generate_ping_buttons()
 
+        # Set transparency
+        self._root.wait_visibility(self._root)
+        self._root.attributes('-alpha', 0.95)
         # Run Event loop
         self._root.mainloop()
 
