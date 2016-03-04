@@ -31,19 +31,27 @@ class NotiFireDb(object):
                 return name
         raise KeyError("Can't find address %s" % address)
 
+    @classmethod
+    def get_all_names(cls):
+        with open(cls.FILE) as f:
+            json_obj = json_load(f)
+        return json_obj.keys()
+
 
 def unit_test():
     from os import remove
     try:
         NotiFireDb.FILE = "unittest.json"
         t1 = "name1", "a1"
+        t2 = "name2", "a2"
         NotiFireDb.register(*t1)
-        NotiFireDb.register("name2", "a2")
+        NotiFireDb.register(*t2)
         if NotiFireDb.get_address(t1[0]) != t1[1]:
             raise Exception("Can't get address")
         if NotiFireDb.get_name(t1[1]) != t1[0]:
             raise Exception("Can't get name")
-
+        if set(NotiFireDb.get_all_names()) != {t1[0], t2[0]}:
+            raise Exception("Can't get all name")
         try:
             NotiFireDb.get_name("nop")
             raise Exception("Improper error handling: get_name")
