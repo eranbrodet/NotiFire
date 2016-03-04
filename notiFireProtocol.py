@@ -8,7 +8,7 @@ class NotiFireProtocol(object):   #TODO document
         self.my_name = my_name
 
     def ping(self, connection, name):
-        data = pack(self.HEADER_TYPE, len(name), len(self.my_name)) + name + self.my_name
+        data = pack(self.HEADER_TYPE, len(self.my_name), len(name)) + self.my_name + name
         connection.send(data)
 
     def pong(self, connection):
@@ -22,7 +22,7 @@ class NotiFireProtocol(object):   #TODO document
 
 def unit_test():
     class ConnectionMock(object):
-        def send(self, data): self.data = data
+        def send(self, data): self.data = data;
         def receive(self, len):
             ret, self.data = self.data[:len], self.data[len:]
             return ret

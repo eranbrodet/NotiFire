@@ -1,18 +1,14 @@
-from select import select
-from socket import socket, AF_INET, SOCK_DGRAM
+from contextlib import closing
+from socket import socket, gethostname
 from notiFireProtocol import NotiFireProtocol
 
 
-class UdpReceiver(object):
-    def __init__(self, s):
-        self.data = s.recv(1024)
-        print "Received data size %s" % (len(self.data),)
+class Receiver(object):
+    def __init__(self, connection):
+        self.connection = connection
 
     def receive(self, size):
-        print "Receive with size %s" % (size,)
-        ret = self.data[:size]
-        self.data = self.data[size:]
-        return ret
+        return self.connection.recv(size)
 
 
 class NotifireServer(object):
@@ -22,15 +18,15 @@ class NotifireServer(object):
         self.callback = callback
 
     def start(self):
-        self.socket = socket(AF_INET, SOCK_DGRAM)
-        self.socket.bind(('', self.port))
-        self.socket.setblocking(0)
+        with closing(socket()) as self.socket:
+            host = gethostname()
+            self.socket.bind((host, self.port))        # Bind to the port
+            self.socket.listen(5)                 # Now wait for client connection.
+            while True:
+               connection, addr = self.socket.accept()     # Establish connection with client.
+               self.handle_result(connection)
 
-        while True:
-            result = select([self.socket], [], [])
-            self.handle_result(result)
-
-    def handle_result(self, select_result):
-        sender = self.protocol.pong(UdpReceiver(select_result[0][0]))
+    def handle_result(self, connection):
+        sender = self.protocol.pong(Receiver(connection))
         if sender is not None:
             self.callback(sender)
