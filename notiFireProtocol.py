@@ -4,6 +4,7 @@ from struct import pack, unpack, calcsize
 class NotiFireProtocol(object):   #TODO document
     #TODO consider going back to just sending the sender's name
     HEADER_TYPE = "!II"
+    HEADER_SIZE = calcsize(HEADER_TYPE)
 
     def __init__(self, my_name):
         self.my_name = my_name
@@ -13,7 +14,7 @@ class NotiFireProtocol(object):   #TODO document
         connection.send(data)
 
     def pong(self, connection):
-        my_name_length, name_length = unpack(self.HEADER_TYPE, connection.receive(calcsize(self.HEADER_TYPE)))
+        my_name_length, name_length = unpack(self.HEADER_TYPE, connection.receive(self.HEADER_SIZE))
         print "ponged lengths", my_name_length, name_length
         recipient = connection.receive(my_name_length)
         print "ponged recipient", recipient

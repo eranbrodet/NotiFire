@@ -8,12 +8,13 @@ class NotiFireDb(object):
 
     @classmethod
     def register(cls, name, address):
-        file_exists = exists(cls.FILE)
-        mode = "r+" if file_exists else "w"
-        with open(cls.FILE, mode) as f:
-            json_obj = json_load(f) if file_exists else {}
-            json_obj[name] = address# <--- add `id` value.
-            f.seek(0)        # <--- should reset file position to the beginning.
+        if exists(cls.FILE):
+            with open(cls.FILE, "r+") as f:
+                json_obj = json_load(f)
+        else:
+                json_obj = {}
+        json_obj[name] = address
+        with open(cls.FILE, "w") as f:
             json_dump(json_obj, f, indent=4, sort_keys=True)
 
     @classmethod
@@ -45,13 +46,13 @@ def unit_test():
 
         try:
             NotiFireDb.get_name("nop")
-            raise ("Improper error handling: get_name")
+            raise Exception("Improper error handling: get_name")
         except:
             pass
         try:
             NotiFireDb.get_address("nop")
-            raise ("Improper error handling: get_address")
-        except:
+            raise Exception("Improper error handling: get_address")
+        except KeyError:
             pass
     finally:
         if exists(NotiFireDb.FILE):

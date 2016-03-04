@@ -8,8 +8,8 @@ class NotiFireClient(object):
         self.port = port
         self.protocol = NotiFireProtocol(my_name)
 
-    def ping_user(self, recipient):
+    def ping_user(self, recipient_address, recipient_name):
         with closing(socket()) as connection:
-            connection.connect((gethostname(), self.port)) #TODO get actual host
-            self.protocol.ping(connection, recipient)
-        print "Pinged " + recipient
+            connection.connect((recipient_address, self.port))
+            self.protocol.ping(connection, recipient_name)
+        print "Pinged " + recipient_name
