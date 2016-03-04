@@ -18,8 +18,7 @@ class NotiFireProtocol(object):   #TODO document
         print "ponged lengths", my_name_length, name_length
         recipient = connection.receive(my_name_length)
         print "ponged recipient", recipient
-        if recipient == self.my_name:
-            return connection.receive(name_length)
+        return connection.receive(name_length)
 
 
 def unit_test():

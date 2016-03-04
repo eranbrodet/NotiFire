@@ -35,3 +35,4 @@ class NotifireServer(object):
         sender = self.protocol.pong(ReceiveAdapter(connection))
         if sender is not None:
             self.callback(sender)
+
