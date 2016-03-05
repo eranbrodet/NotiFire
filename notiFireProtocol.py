@@ -1,5 +1,5 @@
 from struct import pack, unpack, calcsize
-from logger import getScreenLogger
+from logger import get_logger
 
 
 class NotiFireProtocol(object):   #TODO document
@@ -9,7 +9,7 @@ class NotiFireProtocol(object):   #TODO document
 
     def __init__(self, my_name):
         self.my_name = my_name
-        self.logger = getScreenLogger(self.__class__.__name__)
+        self.logger = get_logger(self.__class__.__name__)
 
     def ping(self, connection, name):
         #TODO can't handle unicode
