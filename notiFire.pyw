@@ -11,7 +11,7 @@ from windowsUI import MainWindow
 
 class NotiFire(object):
     def _run_server(self):
-        server = NotifireServer(self.port.value, self.name.value, splash.show)
+        server = NotifireServer(self.port.value, self.name.value, splash.info)
         server.start()
 
     def _register(self, name, port):
@@ -19,6 +19,7 @@ class NotiFire(object):
         NotiFireDb.register(name, my_address, port, old_name=self.name.value)
         self.name.value = name
         print "new name", self.name.value
+
 
     def _register_infinite(self):
         while True:
@@ -28,14 +29,14 @@ class NotiFire(object):
             except ValueError:
                 pass  # Ignoring when we are trying to register the same name again
             finally:
-                sleep(10)  #TODO configurable time
+                sleep(3600)  #TODO configurable time
 
     def _register_once(self, name, port):
         try:
             self._register(name, port)
             return True
         except ValueError:
-            splash.warning("Name already take")
+            splash.warning("Name already taken")
             return False
 
     def _pinger(self, recipient):

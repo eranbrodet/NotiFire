@@ -5,6 +5,9 @@ from Tkinter import TOP, BOTH, YES, FLAT  # Properties
 from notiFireDb import NotiFireDb
 from screenSplasher import splash
 
+#TODO add systray icon
+
+
 class FlatButton(Button, object):
     def __init__(self, master, no_bg=False, **kwargs):
         if (not no_bg) and 'bg' not in kwargs:
@@ -45,7 +48,7 @@ class MainWindow(object):
         self._port.set(port)
         self._name = StringVar()
         self._name.set(name)
-        self._register_callback = register_callback
+        self._update_callback = register_callback
         self._ping_callback = ping_callback
 
     def show(self):
@@ -65,13 +68,12 @@ class MainWindow(object):
         self.frame.master.overrideredirect(True)  # Set no border or title
 
         FlatButton(self.frame, text='×', no_bg=True, width=1, font=("calibri", 15), command=self._root.destroy).place(x=w-20, y=-10)
-
+        #TODO input validation ?
         Label(self.frame, text="Name").place(x=10, y=15)
         Entry(self.frame, exportselection=0, relief=FLAT, textvariable=self._name).place(x=80, y=15)
 
+        FlatButton(self.frame, text="Test", width=26, command=self._test_action).place(x=10, y=50)
         FlatButton(self.frame, text="Update", width=26, command=self._update_action).place(x=10, y=90)
-
-        #TODO put in a frame with a scrollbar
 
         self.buttons = []
         self._generate_ping_buttons()
@@ -82,8 +84,12 @@ class MainWindow(object):
         # Run Event loop
         self._root.mainloop()
 
+    def _test_action(self):
+        self._ping_smoeone(self._name.get())
+
     def _update_action(self):
-        self._register_callback(self._name.get(), self._port.get())
+        name = self._name.get()
+        self._update_callback(name, self._port.get())
 
     def _ping_smoeone(self, name):
         ret = self._ping_callback(name)
@@ -92,17 +98,20 @@ class MainWindow(object):
             splash.error(name + ' is no longer available')
 
     def _generate_ping_buttons(self):
+        #TODO put in a frame with a scrollbar
         for button in self.buttons:
             button.destroy()
         self.buttons = []
         next_y = 10
         for name in sorted(NotiFireDb.get_all_names()):
-            #TODO filter out yourself (maybe unless in some debug mode)
+            if self._name.get() == name:
+                continue
             cmd = partial(self._ping_smoeone, name)
             button = FlatButton(self.frame, text="Ping " + name, width=20, command=cmd)
             self.buttons.append(button)
             button.place(x=300, y=next_y)
             next_y += 40
+
 
 def unit_test():
     from sys import stdout

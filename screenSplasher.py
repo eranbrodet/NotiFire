@@ -6,19 +6,23 @@ class splash(object):
     DEFAULT_TIMEOUT = 1500
 
     @classmethod
+    def success(cls, text, timeout_ms=DEFAULT_TIMEOUT):
+        cls.show(text, background="#0a0", timeout_ms=timeout_ms, font_size=50)
+
+    @classmethod
     def info(cls, text, timeout_ms=DEFAULT_TIMEOUT):
         cls.show(text, background="#5bf", timeout_ms=timeout_ms)
 
     @classmethod
     def warning(cls, text, timeout_ms=DEFAULT_TIMEOUT):
-        cls.show(text, background="#aa0", timeout_ms=timeout_ms)
+        cls.show(text, background="#aa0", timeout_ms=timeout_ms, font_size=50)
 
     @classmethod
     def error(cls, text, timeout_ms=DEFAULT_TIMEOUT):
-        cls.show(text, background="#a00", timeout_ms=timeout_ms)
+        cls.show(text, background="#a00", timeout_ms=timeout_ms, font_size=50)
 
     @staticmethod
-    def show(text, background="#fff", timeout_ms=DEFAULT_TIMEOUT):
+    def show(text, background="#fff", timeout_ms=DEFAULT_TIMEOUT, font_size=100):
         root = Tk()
         root.attributes("-topmost", True)
         # Set Timeout
@@ -41,7 +45,7 @@ class splash(object):
         # Create text label
         label = Label(frame, text=text, wraplength=screen_width * 0.8)
         label.pack(side=TOP, expand=YES)
-        label.config(bg=background, justify=CENTER, font=("calibri", 100))
+        label.config(bg=background, justify=CENTER, font=("calibri", font_size))
         # Set transparency
         root.wait_visibility(root)  # Needed for linux (and must come after overrideredirect)
         root.attributes('-alpha', 0.6)
@@ -54,6 +58,7 @@ def unit_test():
     rand_hex = "#%06x" % randint(0, 0xFFFFFF)
     print "trying out " + rand_hex
     splash.show("Your name here", rand_hex)
+    splash.success("success")
     splash.info("info")
     splash.warning("warning")
     splash.error("error")

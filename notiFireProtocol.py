@@ -10,16 +10,16 @@ class NotiFireProtocol(object):   #TODO document
         self.my_name = my_name
 
     def ping(self, connection, name):
+        #TODO can't handle unicode
         data = pack(self.HEADER_TYPE, len(name), len(self.my_name)) + name + self.my_name
         connection.send(data)
 
     def pong(self, connection):
-        my_name_length, name_length = unpack(self.HEADER_TYPE, connection.receive(self.HEADER_SIZE))
-        print "ponged lengths", my_name_length, name_length
-        recipient = connection.receive(my_name_length)
-        print "ponged recipient", recipient
-        return connection.receive(name_length)
-
+        recipient_length, sender_length = unpack(self.HEADER_TYPE, connection.receive(self.HEADER_SIZE))
+        recipient = connection.receive(recipient_length)
+        sender = connection.receive(sender_length)
+        print "Ponged from %s to %s" % (sender, recipient)
+        return recipient
 
 def unit_test():
     class ConnectionMock(object):
@@ -28,19 +28,13 @@ def unit_test():
             ret, self.data = self.data[:len], self.data[len:]
             return ret
 
-    name = "name_"
+    sender = "sender"
     c = ConnectionMock()
-    p = NotiFireProtocol("Local")
-    p.ping(c, name)
+    p = NotiFireProtocol(sender)
+    p.ping(c, sender)
     got = p.pong(c)
-    if name != got:
-        raise Exception("got %s instead of %s" % (got, name))
-
-    p2 = NotiFireProtocol("Other")
-    p.ping(c, name)
-    got = p2.pong(c)
-    if got is not None:
-        raise Exception("got %s, but shouldn't have" % (got,))
+    if sender != got:
+        raise Exception("got %s instead of %s" % (got, sender))
 
 
 if __name__ == "__main__":
