@@ -22,7 +22,7 @@ class NotiFireProtocol(object):   #TODO document
         recipient = connection.receive(recipient_length)
         sender = connection.receive(sender_length)
         self.logger.debug("Ponged from %s to %s" % (sender, recipient))
-        return recipient
+        return sender
 
 
 def unit_test():

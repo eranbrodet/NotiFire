@@ -2,6 +2,7 @@
 from functools import partial
 from Tkinter import Tk, Frame, Label, Entry, StringVar, Button  # Elements
 from Tkinter import TOP, BOTH, YES, FLAT  # Properties
+from logger import logger
 from notiFireDb import NotiFireDb
 from screenSplasher import splash
 
@@ -41,55 +42,98 @@ class DraggableFrame(Frame, object):
         self.master.geometry("+%s+%s" % (x, y))
 
 
-class MainWindow(object):
-    def __init__(self, port, name, register_callback, ping_callback):
+class UI(object):
+    def __init__(self):
         self._root = Tk()
-        self._port = StringVar()
-        self._port.set(port)
         self._name = StringVar()
+
+    ##########################################################################
+    ####                       Public methods                            #####
+    ##########################################################################
+    def get_name(self):
+        frame = DraggableFrame(self._root)
+        frame.pack(side=TOP, fill=BOTH, expand=YES)
+
+        frame.columnconfigure(0, weight=1)
+        frame.columnconfigure(4, weight=1)
+        frame.rowconfigure(0, weight=2)
+        frame.rowconfigure(3, weight=1)
+        frame.rowconfigure(4, weight=2)
+
+        w = self._set_frame_geo(frame, 0.3, 0.3)[2]
+        FlatButton(frame, text='×', no_bg=True, width=1, font=("calibri", 15), command=self._close_get_name).place(x=w-20, y=-10)
+        Label(frame, text="Name:").grid(column=1, row=1)
+        Entry(frame, exportselection=0, relief=FLAT, textvariable=self._name).grid(column=2, row=1)
+        error_label = Label(frame, fg='red')
+        error_label.grid(column=3, row=1)
+        FlatButton(frame, text='OK', width=20, font=("calibri", 15),
+                   command=partial(self._validate_name, error_label)).grid(column=1, row=3, columnspan=3)
+        self._run()
+        return self._name.get() if self._name else self._name
+
+    def main_window(self, name, ping_callback):
         self._name.set(name)
-        self._update_callback = register_callback
         self._ping_callback = ping_callback
 
-    def show(self):
         # Create Frame
         self.frame = DraggableFrame(self._root)
         self.frame.pack(side=TOP, fill=BOTH, expand=YES)
-        # Set frame size and position
-        screen_width = self.frame.master.winfo_screenwidth()
-        screen_heigh = self.frame.master.winfo_screenheight()
-        w = screen_width * 0.5
-        h = screen_heigh * 0.6
-        # Center the window
-        x = (screen_width/2) - (w/2)
-        y = (screen_heigh/2) - (h/2)
-        self.frame.master.geometry('%dx%d+%d+%d' % (w, h, x, y))
-        # Adjust frame properties
-        self.frame.master.overrideredirect(True)  # Set no border or title
+
+        w = self._set_frame_geo(self.frame, 0.5, 0.6)[2]
 
         FlatButton(self.frame, text='×', no_bg=True, width=1, font=("calibri", 15), command=self._root.destroy).place(x=w-20, y=-10)
         #TODO input validation ?
-        Label(self.frame, text="Name").place(x=10, y=15)
-        Entry(self.frame, exportselection=0, relief=FLAT, textvariable=self._name).place(x=80, y=15)
+        Label(self.frame, text="Name:").place(x=10, y=15)
+        Label(self.frame, text=self._name.get(), fg='blue').place(x=80, y=15)
 
         FlatButton(self.frame, text="Test", width=26, command=self._test_action).place(x=10, y=50)
-        FlatButton(self.frame, text="Update", width=26, command=self._update_action).place(x=10, y=90)
 
         self.buttons = []
         self._generate_ping_buttons()
+        self._run()
 
+    ##########################################################################
+    ####                       Private methods                           #####
+    ##########################################################################
+
+    def _run(self):
         # Set transparency
         self._root.wait_visibility(self._root)
         self._root.attributes('-alpha', 0.95)
         # Run Event loop
         self._root.mainloop()
 
+    def _close_get_name(self):
+        self._name = None
+        self._root.destroy()
+
+    def _set_frame_geo(self, frame, wf, hf):
+        # Set frame size and position
+        screen_width = frame.master.winfo_screenwidth()
+        screen_heigh = frame.master.winfo_screenheight()
+        w = screen_width * wf
+        h = screen_heigh * hf
+        # Center the window
+        x = (screen_width/2) - (w/2)
+        y = (screen_heigh/2) - (h/2)
+        frame.master.geometry('%dx%d+%d+%d' % (w, h, x, y))
+        frame.master.overrideredirect(True)  # Set no border or title
+        return x, y, w, h
+
+    def _validate_name(self, error_label):
+        name = self._name.get()
+        if not 0 < len(name) < 25:
+            error_label.config(text="name must be 0-25 chars long")
+            logger.error("invalid name: %s" % (name))
+        elif not all(ord(c) < 128 for c in name):
+            error_label.config(text="name must be ascii")
+            logger.error("invalid name: %s" % (name))
+        else:
+            self._root.destroy()
+
+
     def _test_action(self):
         self._ping_smoeone(self._name.get())
-
-    def _update_action(self):
-        name = self._name.get()
-        self._update_callback(name, self._port.get())
 
     def _ping_smoeone(self, name):
         ret = self._ping_callback(name)
@@ -115,8 +159,7 @@ class MainWindow(object):
 
 def unit_test():
     from sys import stdout
-    MainWindow("12345", "Eran", lambda x,y:stdout.write('Register ' + x + ', ' + y + '\n'),
-               lambda x:stdout.write('ping ' + x + '\n')).show()
+    UI().main_window("Eran", lambda x:stdout.write('ping ' + x + '\n'))
 
 
 if __name__ == '__main__':
