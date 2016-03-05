@@ -3,6 +3,7 @@ from socket import socket, gethostname
 from logger import logger
 from notiFireProtocol import NotiFireProtocol
 
+
 class ReceiveAdapter(object):
     """
         We use an adapter since our protocol requires a receive method instead of recv
@@ -14,7 +15,7 @@ class ReceiveAdapter(object):
         return self.connection.recv(size)
 
 
-class NotifireServer(object):
+class NotiFireServer(object):
     def __init__(self, port, my_name, callback):
         self.port = port
         self.protocol = NotiFireProtocol(my_name)
@@ -28,8 +29,8 @@ class NotifireServer(object):
             self.socket.bind((host, self.port))
             self.socket.listen(5)
             while True:
-               connection, addr = self.socket.accept()
-               self.handle_request(connection)
+                 connection, addr = self.socket.accept()
+                 self.handle_request(connection)
 
     def handle_request(self, connection):
         logger.debug("Handling request")

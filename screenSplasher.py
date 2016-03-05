@@ -67,5 +67,6 @@ def unit_test():
     splash.warning("warning")
     splash.error("error")
 
+
 if __name__ == '__main__':
     unit_test()

@@ -159,7 +159,8 @@ class UI(object):
 
 def unit_test():
     from sys import stdout
-    UI().main_window("Eran", lambda x:stdout.write('ping ' + x + '\n'))
+    name = UI().get_name()
+    UI().main_window(name, lambda x:stdout.write('ping ' + x + '\n'))
 
 
 if __name__ == '__main__':

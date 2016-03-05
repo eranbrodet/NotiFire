@@ -1,12 +1,12 @@
 from functools import partial
-from multiprocessing import Process, freeze_support, Value, Array
+from multiprocessing import Process, freeze_support
 from socket import gethostname
 from time import sleep
 
 from logger import logger
 from notiFireDb import NotiFireDb
 from notiFireClient import NotiFireClient
-from notifireServer import NotifireServer
+from notiFireServer import NotiFireServer
 from screenSplasher import splash
 from windowsUI import UI
 
@@ -16,7 +16,7 @@ class NotiFire(object):
         self.name = None
 
     def _run_server(self, name, port):
-        server = NotifireServer(port, name, splash.info)
+        server = NotiFireServer(port, name, splash.info)
         server.start()
 
     def _register(self, name, port):
