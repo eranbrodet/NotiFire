@@ -33,7 +33,7 @@ class NotiFire(object):
             except ValueError:
                 pass  # Ignoring when we are trying to register the same name again
             finally:
-                sleep(3)  #TODO configurable time
+                sleep(3600)  #TODO configurable time
 
     def _register_once(self, name, port):
         try:

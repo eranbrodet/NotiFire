@@ -56,18 +56,23 @@ class UI(object):
 
         frame.columnconfigure(0, weight=1)
         frame.columnconfigure(4, weight=1)
-        frame.rowconfigure(0, weight=2)
-        frame.rowconfigure(3, weight=1)
-        frame.rowconfigure(4, weight=2)
+        frame.rowconfigure(0, weight=1)
+        frame.rowconfigure(4, weight=1)
 
         w = self._set_frame_geo(frame, 0.3, 0.3)[2]
         FlatButton(frame, text='×', no_bg=True, width=1, font=("calibri", 15), command=self._close_get_name).place(x=w-20, y=-10)
         Label(frame, text="Name:").grid(column=1, row=1)
-        Entry(frame, exportselection=0, relief=FLAT, textvariable=self._name).grid(column=2, row=1)
+        entry = Entry(frame, exportselection=0, relief=FLAT, textvariable=self._name)
+        entry.grid(column=2, row=1)
+        entry.focus_set()
         error_label = Label(frame, fg='red')
-        error_label.grid(column=3, row=1)
+        error_label.grid(column=1, row=2, columnspan=3)
+
+        ok_cmd = partial(self._validate_name, error_label)
         FlatButton(frame, text='OK', width=20, font=("calibri", 15),
-                   command=partial(self._validate_name, error_label)).grid(column=1, row=3, columnspan=3)
+                   command=ok_cmd).grid(column=1, row=3, columnspan=3)
+
+        self._root.bind('<Return>', ok_cmd)
         self._run()
         return self._name.get() if self._name else self._name
 
@@ -103,7 +108,7 @@ class UI(object):
         # Run Event loop
         self._root.mainloop()
 
-    def _close_get_name(self):
+    def _close_get_name(self, event=None):
         self._name = None
         self._root.destroy()
 
@@ -120,14 +125,14 @@ class UI(object):
         frame.master.overrideredirect(True)  # Set no border or title
         return x, y, w, h
 
-    def _validate_name(self, error_label):
+    def _validate_name(self, error_label, event=None):
         name = self._name.get()
         if not 0 < len(name) < 25:
-            error_label.config(text="name must be 0-25 chars long")
-            logger.error("invalid name: %s" % (name))
+            error_label.config(text="Name must be 1-25 chars long")
+            logger.error("Invalid name: %s" % (name))
         elif not all(ord(c) < 128 for c in name):
-            error_label.config(text="name must be ascii")
-            logger.error("invalid name: %s" % (name))
+            error_label.config(text="Name must be ascii")
+            logger.error("Invalid Name: %s" % (name))
         else:
             self._root.destroy()
 
