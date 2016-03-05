@@ -5,7 +5,7 @@ from logger import logger
 
 class NotiFireDb(object):
     #TODO Maybe make configurable
-    FILE = "1.json"  #TODO consider sqlite or at least file locking
+    FILE = "notiFire.db"  #TODO consider sqlite or at least file locking
 
     @classmethod
     def register(cls, name, address, port, old_name=None, **options):

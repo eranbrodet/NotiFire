@@ -73,6 +73,7 @@ class UI(object):
                    command=ok_cmd).grid(column=1, row=3, columnspan=3)
 
         self._root.bind('<Return>', ok_cmd)
+        self._root.bind('<Escape>', self._close_get_name)
         self._run()
         return self._name.get() if self._name else self._name
 
