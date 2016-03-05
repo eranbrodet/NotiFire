@@ -1,4 +1,5 @@
 from struct import pack, unpack, calcsize
+from logger import getScreenLogger
 
 
 class NotiFireProtocol(object):   #TODO document
@@ -8,9 +9,11 @@ class NotiFireProtocol(object):   #TODO document
 
     def __init__(self, my_name):
         self.my_name = my_name
+        self.logger = getScreenLogger(self.__class__.__name__)
 
     def ping(self, connection, name):
         #TODO can't handle unicode
+        self.logger.debug("Pinging %s" % (name,))
         data = pack(self.HEADER_TYPE, len(name), len(self.my_name)) + name + self.my_name
         connection.send(data)
 
@@ -18,8 +21,9 @@ class NotiFireProtocol(object):   #TODO document
         recipient_length, sender_length = unpack(self.HEADER_TYPE, connection.receive(self.HEADER_SIZE))
         recipient = connection.receive(recipient_length)
         sender = connection.receive(sender_length)
-        print "Ponged from %s to %s" % (sender, recipient)
+        self.logger.debug("Ponged from %s to %s" % (sender, recipient))
         return recipient
+
 
 def unit_test():
     class ConnectionMock(object):

@@ -1,7 +1,7 @@
 from contextlib import closing
 from socket import socket, gethostname
+from logger import logger
 from notiFireProtocol import NotiFireProtocol
-
 
 class ReceiveAdapter(object):
     """
@@ -19,9 +19,10 @@ class NotifireServer(object):
         self.port = port
         self.protocol = NotiFireProtocol(my_name)
         self.callback = callback
+        logger.debug("Creating server with name %s" % (my_name,))
 
     def start(self):
-        print "Starting server"
+        logger.info("Starting Server")
         with closing(socket()) as self.socket:
             host = gethostname()
             self.socket.bind((host, self.port))
@@ -31,8 +32,7 @@ class NotifireServer(object):
                self.handle_request(connection)
 
     def handle_request(self, connection):
-        print "Handling request"
+        logger.debug("Handling request")
         sender = self.protocol.pong(ReceiveAdapter(connection))
         if sender is not None:
             self.callback(sender)
-

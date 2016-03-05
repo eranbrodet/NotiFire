@@ -1,24 +1,28 @@
 from Tkinter import Tk, Frame, Label  # Elements
 from Tkinter import TOP, BOTH, YES, CENTER  # Properties
-
+from logger import logger
 
 class splash(object):
     DEFAULT_TIMEOUT = 1500
 
     @classmethod
     def success(cls, text, timeout_ms=DEFAULT_TIMEOUT):
+        logger.debug("Success splash: " + text)
         cls.show(text, background="#0a0", timeout_ms=timeout_ms, font_size=50)
 
     @classmethod
     def info(cls, text, timeout_ms=DEFAULT_TIMEOUT):
+        logger.debug("Info splash: " + text)
         cls.show(text, background="#5bf", timeout_ms=timeout_ms)
 
     @classmethod
     def warning(cls, text, timeout_ms=DEFAULT_TIMEOUT):
+        logger.debug("Warning splash: " + text)
         cls.show(text, background="#aa0", timeout_ms=timeout_ms, font_size=50)
 
     @classmethod
     def error(cls, text, timeout_ms=DEFAULT_TIMEOUT):
+        logger.debug("Error splash: " + text)
         cls.show(text, background="#a00", timeout_ms=timeout_ms, font_size=50)
 
     @staticmethod
@@ -56,7 +60,7 @@ class splash(object):
 def unit_test():
     from random import randint
     rand_hex = "#%06x" % randint(0, 0xFFFFFF)
-    print "trying out " + rand_hex
+    logger.debug("Trying out " + rand_hex)
     splash.show("Your name here", rand_hex)
     splash.success("success")
     splash.info("info")

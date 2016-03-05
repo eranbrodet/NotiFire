@@ -1,5 +1,6 @@
 from json import load as json_load, dump as json_dump
 from os.path import exists
+from logger import logger
 
 
 class NotiFireDb(object):
@@ -17,7 +18,7 @@ class NotiFireDb(object):
             raise ValueError("Name already taken")
 
         if old_name in json_obj:
-            print "removing ", old_name
+            logger.debug("Removing %s" % (old_name,))
             del json_obj[old_name]
         json_obj[name] = address, port, options
         with open(cls.FILE, "w") as f:
@@ -55,7 +56,7 @@ class NotiFireDb(object):
         with open(cls.FILE, "r+") as f:
             json_obj = json_load(f)
         if name not in json_obj:
-            print "no such name"
+            logger.debug("No such name %s" % (name,))
             return False
         del json_obj[name]
         with open(cls.FILE, "w") as f:
@@ -94,7 +95,7 @@ def unit_test():
     finally:
         if exists(NotiFireDb.FILE):
             remove(NotiFireDb.FILE)
-    print 'Passed unit-test'
+    logger.debug("Passed unit-tests")
 
 
 if __name__ == "__main__":

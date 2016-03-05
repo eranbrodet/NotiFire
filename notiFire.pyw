@@ -2,6 +2,8 @@ from multiprocessing import Process, freeze_support, Value, Array
 from random import randint
 from socket import gethostname
 from time import sleep
+
+from logger import logger
 from notiFireDb import NotiFireDb
 from notiFireClient import NotiFireClient
 from notifireServer import NotifireServer
@@ -10,6 +12,7 @@ from windowsUI import MainWindow
 
 
 class NotiFire(object):
+
     def _run_server(self):
         server = NotifireServer(self.port.value, self.name.value, splash.info)
         server.start()
@@ -18,13 +21,13 @@ class NotiFire(object):
         my_address = gethostname()
         NotiFireDb.register(name, my_address, port, old_name=self.name.value)
         self.name.value = name
-        print "new name", self.name.value
+        logger.info("new name %s" % (self.name.value,))
 
 
     def _register_infinite(self):
         while True:
             try:
-                print "_register_infinite running with ", self.name.value, self.port.value
+                logger.info("_register_infinite running with %s %s" % (self.name.value, self.port.value))
                 self._register(self.name.value, self.port.value)
             except ValueError:
                 pass  # Ignoring when we are trying to register the same name again
@@ -50,9 +53,9 @@ class NotiFire(object):
             return False
 
     def main(self):
+        logger.info("Starting")
         self.name = Array('c', "Anonymous_%s" % (randint(0, 1024),))
         self.port = Value('i', 60053)
-        #TODO use logger instead of print
         freeze_support()  #TODO needed? what does it do?
         #TODO will it always register the same name here?
 
@@ -64,11 +67,11 @@ class NotiFire(object):
 
         MainWindow(self.port.value, self.name.value, self._register_once, self._pinger).show()
 
-        print "Shutting down"
+        logger.info("After UI")
         register_process.terminate()
         server_process.terminate()
         NotiFireDb.remove(self.name.value)
-
+        logger.info("Bye bye")
 
 if __name__ == "__main__":
     NotiFire().main()
