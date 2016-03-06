@@ -148,6 +148,7 @@ class UI(object):
             splash.error(name + ' is no longer available')
 
     def _generate_ping_buttons(self):
+        logger.info("generating buttons")
         #TODO put in a frame with a scrollbar
         for button in self.buttons:
             button.destroy()
