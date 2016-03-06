@@ -113,7 +113,8 @@ class UI(object):
         self._name = None
         self._root.destroy()
 
-    def _set_frame_geo(self, frame, wf, hf):
+    @staticmethod
+    def _set_frame_geo(frame, wf, hf):
         # Set frame size and position
         screen_width = frame.master.winfo_screenwidth()
         screen_heigh = frame.master.winfo_screenheight()
@@ -138,9 +139,9 @@ class UI(object):
             self._root.destroy()
 
     def _test_action(self):
-        self._ping_smoeone(self._name.get())
+        self._ping_someone(self._name.get())
 
-    def _ping_smoeone(self, name):
+    def _ping_someone(self, name):
         ret = self._ping_callback(name)
         if not ret:
             self._generate_ping_buttons()
@@ -156,7 +157,7 @@ class UI(object):
         for name in sorted(NotiFireDb.get_all_names()):
             if self._name.get() == name:
                 continue
-            cmd = partial(self._ping_smoeone, name)
+            cmd = partial(self._ping_someone, name)
             button = FlatButton(self.frame, text="Ping " + name, width=20, command=cmd)
             self.buttons.append(button)
             button.place(x=300, y=next_y)
@@ -165,6 +166,7 @@ class UI(object):
     def _auto_refresh(self):
         self._generate_ping_buttons()
         self._root.after(600000, self._auto_refresh)  # Run again in 10 mintues
+
 
 def unit_test():
     from sys import stdout
