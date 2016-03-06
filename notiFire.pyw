@@ -57,7 +57,8 @@ class NotiFire(object):
                 NotiFireDb.remove(name)
             logger.info("Bye bye")
 
-    def _run_server(self, name, port):
+    @staticmethod
+    def _run_server(name, port):
         server = NotiFireServer(port, name, splash.info)
         server.start()
 
@@ -101,13 +102,14 @@ class NotiFire(object):
         parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
         parser.add_argument("-n", "--name", type=str, metavar="your name", default="")
         features_group = parser.add_argument_group("Features")
+        features_group = features_group.add_mutually_exclusive_group()
         features_group.add_argument("--ping", "-p", type=str, metavar="person_name")
         features_group.add_argument("--start_server", "-s", action="store_true")
         args = parser.parse_args()
         if not args.name and (args.ping or args.start_server):
             parser.error("Please supply your name")
         if args.name and (not args.ping) and (not args.start_server):
-            parser.error("Please choose at least one feature to run")
+            parser.error("Please choose a feature to run")
         return args
 
 

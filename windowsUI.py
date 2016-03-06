@@ -94,7 +94,7 @@ class UI(object):
 
         FlatButton(self.frame, text="Test", width=26, command=self._test_action).place(x=10, y=50)
         FlatButton(self.frame, text='Refresh', width=26, command=self._generate_ping_buttons).place(x=10, y=90)
-        self.buttons = []
+        self.ping_buttons = []
         self._auto_refresh()
         self._run()
 
@@ -150,16 +150,16 @@ class UI(object):
     def _generate_ping_buttons(self):
         logger.info("generating buttons")
         #TODO put in a frame with a scrollbar
-        for button in self.buttons:
+        for button in self.ping_buttons:
             button.destroy()
-        self.buttons = []
+        self.ping_buttons = []
         next_y = 10
         for name in sorted(NotiFireDb.get_all_names()):
             if self._name.get() == name:
                 continue
             cmd = partial(self._ping_someone, name)
             button = FlatButton(self.frame, text="Ping " + name, width=20, command=cmd)
-            self.buttons.append(button)
+            self.ping_buttons.append(button)
             button.place(x=300, y=next_y)
             next_y += 40
 
