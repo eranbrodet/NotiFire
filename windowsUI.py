@@ -45,6 +45,7 @@ class DraggableFrame(Frame, object):
 class UI(object):
     def __init__(self):
         self._root = Tk()
+        self._root.title("^ NotiFire ^")
         self._name = StringVar()
 
     ##########################################################################
