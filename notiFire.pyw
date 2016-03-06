@@ -57,8 +57,7 @@ class NotiFire(object):
                 NotiFireDb.remove(name)
             logger.info("Bye bye")
 
-    @staticmethod
-    def _run_server(name, port):
+    def _run_server(self, name, port):
         server = NotiFireServer(port, name, splash.info)
         server.start()
 
