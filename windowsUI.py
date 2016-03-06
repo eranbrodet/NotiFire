@@ -95,7 +95,7 @@ class UI(object):
         FlatButton(self.frame, text="Test", width=26, command=self._test_action).place(x=10, y=50)
         FlatButton(self.frame, text='Refresh', width=26, command=self._generate_ping_buttons).place(x=10, y=90)
         self.buttons = []
-        self._generate_ping_buttons()
+        self._auto_refresh()
         self._run()
 
     ##########################################################################
@@ -137,7 +137,6 @@ class UI(object):
         else:
             self._root.destroy()
 
-
     def _test_action(self):
         self._ping_smoeone(self._name.get())
 
@@ -163,6 +162,9 @@ class UI(object):
             button.place(x=300, y=next_y)
             next_y += 40
 
+    def _auto_refresh(self):
+        self._generate_ping_buttons()
+        self._root.after(600000, self._auto_refresh)  # Run again in 10 mintues
 
 def unit_test():
     from sys import stdout

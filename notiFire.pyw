@@ -27,7 +27,7 @@ class NotiFire(object):
         registered = False
         try:
             while not registered:
-                if not name:
+                if not args.name:
                     name = UI().get_name()
                 if name is None:
                     return
