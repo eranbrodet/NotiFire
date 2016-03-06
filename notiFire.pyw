@@ -4,8 +4,8 @@ from socket import gethostname
 from time import sleep
 
 from logger import logger
-from notiFireDb import NotiFireDb
 from notiFireClient import NotiFireClient
+from notiFireDb import NotiFireDb
 from notiFireServer import NotiFireServer
 from screenSplasher import splash
 from windowsUI import UI
@@ -43,7 +43,8 @@ class NotiFire(object):
             splash.warning("Name already taken")
             return False
 
-    def _pinger(self, name, recipient):
+    @staticmethod
+    def _pinger(name, recipient):
         try:
             address, port = NotiFireDb.get_address(recipient)
             port = int(port)
@@ -81,6 +82,7 @@ class NotiFire(object):
             if name is not None:
                 NotiFireDb.remove(name)
             logger.info("Bye bye")
+
 
 if __name__ == "__main__":
     NotiFire().main()

@@ -89,12 +89,11 @@ class UI(object):
         w = self._set_frame_geo(self.frame, 0.5, 0.6)[2]
 
         FlatButton(self.frame, text='×', no_bg=True, width=1, font=("calibri", 15), command=self._root.destroy).place(x=w-20, y=-10)
-        #TODO input validation ?
         Label(self.frame, text="Name:").place(x=10, y=15)
         Label(self.frame, text=self._name.get(), fg='blue').place(x=80, y=15)
 
         FlatButton(self.frame, text="Test", width=26, command=self._test_action).place(x=10, y=50)
-
+        FlatButton(self.frame, text='Refresh', width=26, command=self._generate_ping_buttons).place(x=10, y=90)
         self.buttons = []
         self._generate_ping_buttons()
         self._run()
