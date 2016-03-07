@@ -102,8 +102,8 @@ class NotiFire(object):
         parser.add_argument("-n", "--name", type=str, metavar="your name", default="")
         features_group = parser.add_argument_group("Features")
         features_group = features_group.add_mutually_exclusive_group()
-        features_group.add_argument("--ping", "-p", type=str, metavar="person_name")
-        features_group.add_argument("--start_server", "-s", action="store_true")
+        features_group.add_argument("-p", "--ping", type=str, metavar="person_name")
+        features_group.add_argument("-s", "--start_server", action="store_true")
         args = parser.parse_args()
         if not args.name and (args.ping or args.start_server):
             parser.error("Please supply your name")

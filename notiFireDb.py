@@ -1,11 +1,11 @@
 from json import load as json_load, dump as json_dump
-from os.path import exists
+from os.path import exists, dirname, join
 from logger import logger
 
 
 class NotiFireDb(object):
     #TODO Maybe make configurable
-    FILE = "notiFire.db"  #TODO consider sqlite or at least file locking
+    FILE = join(dirname(__file__), "notiFire.db")  #TODO consider sqlite or at least file locking
 
     @classmethod
     def register(cls, name, address, port, old_name=None, **options):
