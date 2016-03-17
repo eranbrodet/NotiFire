@@ -9,7 +9,7 @@ from notiFireClient import NotiFireClient
 from notiFireDb import NotiFireDb
 from notiFireServer import NotiFireServer
 from screenSplasher import splash
-from windowsUI import UI
+from mainUI import UI
 
 
 class NotiFire(object):

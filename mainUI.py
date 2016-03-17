@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from functools import partial
+from platform import system as which_system
 from Tkinter import Tk, Frame, Label, Entry, StringVar, Button  # Elements
-from Tkinter import TOP, BOTH, YES, FLAT  # Properties
+from Tkinter import TOP, BOTH, YES, FLAT, SUNKEN  # Properties
 from logger import logger
 from notiFireDb import NotiFireDb
 from screenSplasher import splash
@@ -47,6 +48,7 @@ class UI(object):
         self._root = Tk()
         self._root.title("^ NotiFire ^")
         self._name = StringVar()
+        self._is_osx = which_system() == 'Darwin'
 
     ##########################################################################
     ####                       Public methods                            #####
@@ -61,9 +63,10 @@ class UI(object):
         frame.rowconfigure(4, weight=1)
 
         w = self._set_frame_geo(frame, 0.3, 0.3)[2]
-        FlatButton(frame, text='×', no_bg=True, width=1, font=("calibri", 15), command=self._close_get_name).place(x=w-20, y=-10)
+        self._set_x_button(frame, w, self._close_get_name)
         Label(frame, text="Name:").grid(column=1, row=1)
-        entry = Entry(frame, exportselection=0, relief=FLAT, textvariable=self._name)
+        entry_style = SUNKEN if self._is_osx else FLAT
+        entry = Entry(frame, exportselection=0, relief=entry_style, textvariable=self._name)
         entry.grid(column=2, row=1)
         entry.focus_set()
         error_label = Label(frame, fg='red')
@@ -88,7 +91,7 @@ class UI(object):
 
         w = self._set_frame_geo(self.frame, 0.5, 0.6)[2]
 
-        FlatButton(self.frame, text='×', no_bg=True, width=1, font=("calibri", 15), command=self._root.destroy).place(x=w-20, y=-10)
+        self._set_x_button(self.frame, w, self._root.destroy)
         Label(self.frame, text="Name:").place(x=10, y=15)
         Label(self.frame, text=self._name.get(), fg='blue').place(x=80, y=15)
 
@@ -101,11 +104,11 @@ class UI(object):
     ##########################################################################
     ####                       Private methods                           #####
     ##########################################################################
-
     def _run(self):
         # Set transparency
         self._root.wait_visibility(self._root)
         self._root.attributes('-alpha', 0.95)
+        self._root.lift()
         # Run Event loop
         self._root.mainloop()
 
@@ -113,8 +116,7 @@ class UI(object):
         self._name = None
         self._root.destroy()
 
-    @staticmethod
-    def _set_frame_geo(frame, wf, hf):
+    def _set_frame_geo(self, frame, wf, hf):
         # Set frame size and position
         screen_width = frame.master.winfo_screenwidth()
         screen_heigh = frame.master.winfo_screenheight()
@@ -124,8 +126,13 @@ class UI(object):
         x = (screen_width/2) - (w/2)
         y = (screen_heigh/2) - (h/2)
         frame.master.geometry('%dx%d+%d+%d' % (w, h, x, y))
-        frame.master.overrideredirect(True)  # Set no border or title
+        if not self._is_osx:
+            frame.master.overrideredirect(True)  # Set no border or title
         return x, y, w, h
+
+    def _set_x_button(self, frame, w, callback):
+        x_button_x_coordinate = w-30 if self._is_osx else w-20
+        FlatButton(frame, text='×', no_bg=True, width=1, font=("calibri", 15), command=callback).place(x=x_button_x_coordinate, y=-10)
 
     def _validate_name(self, error_label, event=None):
         name = self._name.get()

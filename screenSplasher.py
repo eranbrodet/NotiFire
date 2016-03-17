@@ -29,6 +29,7 @@ class splash(object):
     def show(text, background="#fff", timeout_ms=DEFAULT_TIMEOUT, font_size=100):
         root = Tk()
         root.attributes("-topmost", True)
+        root.lift()
         # Set Timeout
         root.after(timeout_ms, root.destroy)
         # Create Frame
