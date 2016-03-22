@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from distutils.version import StrictVersion
 from functools import partial
 from platform import system as which_system
 from Tkinter import Tk, Frame, Label, Entry, StringVar, Button  # Elements
@@ -49,6 +50,7 @@ class UI(object):
         self._root.title("^ NotiFire ^")
         self._name = StringVar()
         self._is_osx = which_system() == 'Darwin'
+        self._version = None
 
     ##########################################################################
     ####                       Public methods                            #####
@@ -94,11 +96,13 @@ class UI(object):
         self._set_x_button(self.frame, w, self._root.destroy)
         Label(self.frame, text="Name:").place(x=10, y=15)
         Label(self.frame, text=self._name.get(), fg='blue').place(x=80, y=15)
+        self._version_label = Label(self.frame, text="Newer version detected, please restart the app", fg='#a00', font=("calibri", 25))
 
         FlatButton(self.frame, text="Test", width=26, command=self._test_action).place(x=10, y=50)
         FlatButton(self.frame, text='Refresh', width=26, command=self._generate_ping_buttons).place(x=10, y=90)
         self.ping_buttons = []
         self._auto_refresh()
+        self._check_version()
         self._run()
 
     ##########################################################################
@@ -173,6 +177,16 @@ class UI(object):
     def _auto_refresh(self):
         self._generate_ping_buttons()
         self._root.after(600000, self._auto_refresh)  # Run again in 10 mintues
+
+    def _check_version(self):
+        with open("version.txt") as f:
+            latest = StrictVersion(f.read())
+        if self._version is None:
+            self._version = latest
+        elif self._version < latest:
+            self._version_label.place(x=80, y=255)
+            return
+        self._root.after(86400000, self._check_version)  # Run again in 1 day
 
 
 def unit_test():
